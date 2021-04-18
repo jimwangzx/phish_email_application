@@ -1,0 +1,13 @@
+beautifulsoup4
+PyQt5
+pandas
+numpy
+sklearn
+nltk
+scipy
+joblib
+matplotlib
+itertools
+collections
+math
+requests
