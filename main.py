@@ -68,58 +68,41 @@ class MainWindow(QMainWindow):
         content = decodeEmail.findUrl(self.fileName)
         # print(content)
         for link in (BeautifulSoup(content).find_all('a', href=True)):
+            print(link)
             url_res = re.search("(?P<url>https?://[^\s]+)", link['href'])
             if(url_res):
                 # links.append(res.group("url"))
                 url = url_res.group("url")
+                newItem = QListWidgetItem()
+
                 import pandas as pd
-                
                 df = pd.read_csv("phishtank.csv")
-                if url in df["url"]:
-                    text = url + " is Phish."
+                if url in list(df["url"]):
+                    text = url + " is in Phishtank."
+                    newItem.setBackground(QColor("red"))
                 else:
                     text = url + " is not in Phishtank."
-                # response = requests.post("http://checkurl.phishtank.com/checkurl/", params={"url":url, "format":"json", "__cf_chl_captcha_tk__":"cf92ed8dc174bccf3fafcbe52b284251580a6485-1618379888-0-AUFBr5sIcjEN5B7rcvUx86uCGHIOWV-gFrDMWDAMC6GpgwVoT89GqsmuahQmDR6--YJEQXMLFZDBkIwp_U_CJSJUC61BwMfWd0w15Zo4GxvvomfC8VLyXGcGmEVbPkMyLwW-TUEkJNeewN0mGbdCN98VU5IfRAvCjWvhjkf9l1Ci3aURoyVotOYx-E7pHHUvKE6-gPiQGaesFM-DSyL65OBWwtG4qIbFCJxsNRtL81g1NAhrvwNCVsqxvK1IyfPnWNz9XO5ukgnawrOPow1afJ0JbiUSdNx-gsaov_YcAjI1WCJ94zmGy9VEbxC3S3qo2hPZbdmQuuuvXBFfYdovJrDUFki7T67vRMIZXUOaULqrwqX5ra1zBihzkNcPPxg5epiTZj8luhJMDOl2whBp6BjLVbwYYMqhsUizYOWJp_nlldxI65jKKvrbW2qvo4wxnWMOdzm44zW52nToTEZQWs01RIyNgOlNPFh4gSoSBG4u5H5_gPqV9Fpb5LTIXp1j2LXHp9K7ND5bNPMcfKcYYNsUpCqC_UnyNoO7lwDT3w6acjF8u7IrDhJIiojtTEzXvii5YisRnglLhLfRlUWGK6RG6ovHM255cqbn79yeGDGu_TSDxw7WfysJMxCComu_--XQFt4GiVlXwykfcJDCJ96eXoB9dg2tl5xNxYPvyB0BV5shFLfQ8-P7KYShBc0kFw"})
-                # print(response)
-                # if(response.status_code == 200):
-                #     res = json.load(response.json())
-                #     if(res["in_database"] == 'y'):
-                #         if(res["verified"] == 'y'):
-                #             if(res["valid"] == 'y'):
-                #                 text = url + " is Phish"
-                #             else:
-                #                 text = url + " is NOT Phish"
-                #         else:
-                #             text = url + " is not verified as Phish or not"
-                #     else:
-                #         text = url + " is not in database"
-                # else:
-                #     newItem = QListWidgetItem()
-                #     newItem.setText("server went down")
-                #     newItem.setHidden(False)
-                #     self.res_list.addItem(newItem)
-        newItem = QListWidgetItem()
-        newItem.setText(text)
-        newItem.setHidden(False)
-        self.res_list.addItem(newItem)
+                    
+                newItem.setText(text)
+                newItem.setHidden(False)
+                self.res_list.addItem(newItem)
+
+        
         content4model = ''
         try:
             f = open(self.fileName, "r", errors="ignore")
         except:
             f = open(self.fileName, "r", encoding="utf-8", errors="ignore")
+        # bs_content=f.read()
         # print(f.read())
         bs_content = BeautifulSoup(f.read()).get_text()
         # print(bs_content)
         content4model = decodeEmail.oriParser(bs_content)
-        print(content4model)
+        # print(content4model)
         
-        self.phish_score.setText("Is Phish?\t" + "Phish!"if(testPhishScore.predict(content4model)) else " Legit!!!!!" )
+        self.phish_score.setText("Is Phish?\t" + "Phish!" if(testPhishScore.predict(content4model)) else " Legit!!!!!" )
         # print(links) 
         
-
-
-
-
 app = QApplication(sys.argv)
 w = MainWindow()
 w.show()
