@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         # confirm_btn.setAlignment(Qt.AlignHCenter)
         layout.addWidget(confirm_btn)
 
-        self.phish_score = QLabel("Phish Score: ")
+        self.phish_score = QLabel("Is Phish?")
         layout.addWidget(self.phish_score)
 
         widget = QWidget()
@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):
 
     def openFileNameDialog(self):
         # options = QFileDialog.Options()
-        self.fileName, _ = QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;Python Files (*.py)")
+        self.fileName, _ = QFileDialog.getOpenFileName(self,"Choose the email to be tested", "","All Files (*);;Email files (*.mht);;Text files(*.txt)")
         name = 'File(s) path: ' + self.fileName
         self.fileNameLabel.setText(name)
         if self.fileName:
@@ -60,10 +60,8 @@ class MainWindow(QMainWindow):
     
     def confirm(self):
         import re
-        import requests
-        with open("phishtank.csv", "r") as f:
-            print(f.read())
-        # links = {}
+        # import requests
+        self.phish_score.setText("Is Phish?")
         self.res_list.clear()
         text = ''
         
@@ -104,7 +102,17 @@ class MainWindow(QMainWindow):
         newItem.setText(text)
         newItem.setHidden(False)
         self.res_list.addItem(newItem)
-        content4model = decodeEmail.oriParser(self.fileName)
+        content4model = ''
+        try:
+            f = open(self.fileName, "r", errors="ignore")
+        except:
+            f = open(self.fileName, "r", encoding="utf-8", errors="ignore")
+        # print(f.read())
+        bs_content = BeautifulSoup(f.read()).get_text()
+        # print(bs_content)
+        content4model = decodeEmail.oriParser(bs_content)
+        print(content4model)
+        
         self.phish_score.setText("Is Phish?\t" + "Phish!"if(testPhishScore.predict(content4model)) else " Legit!!!!!" )
         # print(links) 
         

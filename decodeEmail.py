@@ -162,17 +162,14 @@ def pure_b64decode(src) -> str:
         return "failed"
     return result.replace("NEXTLINEPLACEHOLDER","\n")
 
-def oriParser(path):
+
+
+
+def oriParser(input_txt):
     import traceback
-    # file_id_list = ["/" + str(i) + ".txt" for i in range(1,len(os.listdir(path))+1)]
-    #     outputfile = "GetBothSubjectContent/HeaderPhish.txt"
     parser = email.parser.Parser()
     
-    try:
-        file_pointer = open(path, "r", encoding = "utf-8", errors="ignore")
-    except FileNotFoundError:
-        print("file not found")
-    EmailMessage = parser.parse(file_pointer, headersonly = False)
+    EmailMessage = parser.parsestr(input_txt, headersonly = False)
     # subject = ""
     content = ""
 
@@ -185,7 +182,7 @@ def oriParser(path):
         content = recursivePayloadSearch(EmailMessage)
     #                 content = removehtmltag(removecsstag(content))
     except Exception:
-        print("Get Content Error: %s" %(path))
+        print("Get Content Error: %s" %(input_txt))
 
     try:
         #                 blockPrint()
@@ -193,7 +190,7 @@ def oriParser(path):
         pure_b64 = pure_b64decode(trypayload)
         if len(pure_b64)>0.6*len(EmailMessage._payload):
             #                     enablePrint()
-            print(path)
+            print(input_txt)
             content = pure_b64
     #                 enablePrint()
     except Exception:
@@ -216,14 +213,8 @@ def findUrl(path):
     except FileNotFoundError:
         print("No such file")
     EmailMessage = parser.parse(file_pointer, headersonly = False)
-    # subject = ""
     content = ""
 
-    # try:
-    #     subject = decodeSubject(EmailMessage)
-    # except Exception:
-    #     traceback.print_exc()
-    #     print("Get Subject Error: %s" %(file_id))
     try:
         content = recursivePayloadSearch(EmailMessage)
     #                 content = removehtmltag(removecsstag(content))
@@ -235,19 +226,8 @@ def findUrl(path):
         trypayload = EmailMessage._payload
         pure_b64 = pure_b64decode(trypayload)
         if len(pure_b64)>0.6*len(EmailMessage._payload):
-            #                     enablePrint()
-            print(path)
+            # print(path)
             content = pure_b64
-    #                 enablePrint()
     except Exception:
         pass
-    #                 enablePrint()
-    # content = removehtmltag(content)
-    # if content.find("{") != -1:
-    #     print("has {}")
-    #     content = removecsstag(content)
-    # content = removespecialspace(content).replace("\n","").replace(",","")
-    # print (content)
     return content
-    # subject = subject.replace("\n","").replace(",","")
-    # output = (file_id[1:-4]+","+subject+","+content+"\n") #csv format
